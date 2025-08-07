@@ -82,6 +82,85 @@ public class ShopManager : MonoBehaviour
         }
     }
 
+    // Save/Load
+    public void LoadGameData(SaveData data)
+    {
+        if (data == null)
+        {
+            Debug.LogWarning("[ShopManager] Attempted to load null save data");
+            return;
+        }
+
+        Debug.Log("[ShopManager] Loading shop data from save file...");
+
+        // Load cookie skin
+        ownedCookieSkins = new List<int>(data.ownedCookieSkins);
+
+        // Load shop item level
+        if (data.shopItems != null && data.shopItems.Count > 0)
+        {
+            foreach (var saveItemData in data.shopItems)
+            {
+                if (saveItemData.itemIndex < shopItems.Length)
+                {
+                    shopItems[saveItemData.itemIndex].currentLevel = saveItemData.currentLevel;
+                }
+            }
+        }
+
+        // Apply current cookie skin if saved
+        if (data.currentCookieSkinIndex >= 0 && data.currentCookieSkinIndex < shopItems.Length)
+        {
+            var skinItem = shopItems[data.currentCookieSkinIndex];
+            if (skinItem.IsCookieSkin() && skinItem.cookieSprite != null && cookieClicker != null)
+            {
+                cookieClicker.ChangeCookieSprite(skinItem.cookieSprite);
+                Debug.Log($"[ShopManager] Applied saved cookie skin: {skinItem.itemName}");
+            }
+        }
+
+    
+        RefreshShop();
+
+        Debug.Log($"[ShopManager] Shop data loaded - Owned skins: {ownedCookieSkins.Count}");
+    }
+
+    public SaveData PopulateShopSaveData(SaveData saveData)
+    {
+        if (saveData == null) return null;
+
+        // Save skin yang dimiliki
+        saveData.ownedCookieSkins = new List<int>(ownedCookieSkins);
+
+        // Save shop item level
+        saveData.shopItems.Clear();
+        for (int i = 0; i < shopItems.Length; i++)
+        {
+            if (shopItems[i].currentLevel > 0)
+            {
+                var itemSaveData = new ShopItemSaveData(i, shopItems[i].currentLevel, shopItems[i].itemType);
+                saveData.shopItems.Add(itemSaveData);
+            }
+        }
+
+       
+        saveData.currentCookieSkinIndex = GetCurrentCookieSkinIndex();
+
+        Debug.Log($"[ShopManager] Populated save data - {saveData.shopItems.Count} shop items, {saveData.ownedCookieSkins.Count} owned skins");
+
+        return saveData;
+    }
+
+    private int GetCurrentCookieSkinIndex()
+    {
+        if (ownedCookieSkins.Count > 0)
+        {
+            return ownedCookieSkins[ownedCookieSkins.Count - 1];
+        }
+        return -1;
+    }
+
+  
     private void ApplyEffect(ShopItem item, int index)
     {
         switch (item.itemType)
@@ -108,7 +187,6 @@ public class ShopManager : MonoBehaviour
                 {
                     cookieClicker.ChangeCookieSprite(item.cookieSprite);
 
-                    // Track skin change for quests
                     if (gameManager != null)
                     {
                         gameManager.OnSkinChanged();
@@ -140,5 +218,17 @@ public class ShopManager : MonoBehaviour
     {
         ownedCookieSkins = new List<int>(list);
         RefreshShop();
+    }
+
+    public void SetCurrentCookieSkin(int skinIndex)
+    {
+        if (skinIndex < 0 || skinIndex >= shopItems.Length) return;
+
+        var skinItem = shopItems[skinIndex];
+        if (skinItem.IsCookieSkin() && skinItem.cookieSprite != null && cookieClicker != null)
+        {
+            cookieClicker.ChangeCookieSprite(skinItem.cookieSprite);
+            Debug.Log($"[ShopManager] Set current cookie skin to: {skinItem.itemName}");
+        }
     }
 }

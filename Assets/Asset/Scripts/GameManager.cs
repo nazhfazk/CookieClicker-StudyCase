@@ -28,6 +28,12 @@ public class GameManager : MonoBehaviour
     private int multipliersBought = 0;
     private int skinsChanged = 0;
 
+    
+    [Header("Save/Load System")]
+    [SerializeField] private bool enableAutoSave = true;
+    [SerializeField] private float saveOnProgressInterval = 5f; // Save setiap 5 progress
+    private float lastSaveProgress = 0f;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -53,13 +59,70 @@ public class GameManager : MonoBehaviour
 
             if (autoClickTimer >= 1f / autoClickRate)
             {
-                AddCookie(GetClickPower(), false); // Auto click doesn't count as manual click
+                AddCookie(GetClickPower(), false); 
                 autoClickTimer = 0f;
             }
         }
     }
 
-    // Add cookies to counter
+   
+    public void LoadGameData(SaveData data)
+    {
+        if (data == null)
+        {
+            Debug.LogWarning("[GameManager] Attempted to load null save data");
+            return;
+        }
+
+        Debug.Log("[GameManager] Loading game data from save file...");
+
+       
+        cookieCount = data.cookieCount;
+        clickMultiplier = data.clickMultiplier;
+        autoClickRate = data.autoClickRate;
+
+        
+        totalCookiesEarned = data.totalCookiesEarned;
+        totalCookiesSpent = data.totalCookiesSpent;
+        totalClicks = data.totalClicks;
+        autoClickersBought = data.autoClickersBought;
+        multipliersBought = data.multipliersBought;
+        skinsChanged = data.skinsChanged;
+
+        
+        UpdateCookieCounterUI();
+
+        Debug.Log($"[GameManager] Game data loaded successfully - Cookies: {cookieCount}, Click Power: {GetClickPower()}, Auto Rate: {autoClickRate}");
+
+       
+        if (enableAutoSave && PlayFabManager.Instance != null && PlayFabManager.Instance.IsLoggedIn())
+        {
+            Invoke(nameof(TriggerSave), 2f);
+        }
+    }
+
+    private void TriggerSave()
+    {
+        if (PlayFabManager.Instance != null && PlayFabManager.Instance.IsLoggedIn() && !PlayFabManager.Instance.IsSaving())
+        {
+            PlayFabManager.Instance.SaveGameData();
+        }
+    }
+
+    private void CheckAutoSave()
+    {
+        if (!enableAutoSave) return;
+
+        float currentProgress = totalCookiesEarned + totalCookiesSpent + (totalClicks * 0.1f);
+
+        if (currentProgress - lastSaveProgress >= saveOnProgressInterval)
+        {
+            lastSaveProgress = currentProgress;
+            TriggerSave();
+        }
+    }
+
+    //Tambah cookie ke counter
     public void AddCookie(int amount, bool isManualClick = true)
     {
         cookieCount += amount;
@@ -67,7 +130,7 @@ public class GameManager : MonoBehaviour
 
         UpdateCookieCounterUI();
 
-        // Track quest progress
+        
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.AddProgress(QuestType.EarnCookies, amount);
@@ -79,10 +142,13 @@ public class GameManager : MonoBehaviour
             }
         }
 
+        
+        CheckAutoSave();
+
         Debug.Log($"Added {amount} cookies. Total: {cookieCount}");
     }
 
-    // Spend cookies (untuk shop)
+    // Spend cookie
     public bool SpendCookies(int amount)
     {
         Debug.Log($"Trying to spend {amount} cookies. Have: {cookieCount}");
@@ -94,11 +160,14 @@ public class GameManager : MonoBehaviour
 
             UpdateCookieCounterUI();
 
-            // Track quest progress
+           
             if (QuestManager.Instance != null)
             {
                 QuestManager.Instance.AddProgress(QuestType.SpendCookies, amount);
             }
+
+            
+            CheckAutoSave();
 
             Debug.Log($"Successfully spent {amount} cookies. Remaining: {cookieCount}");
             return true;
@@ -108,63 +177,71 @@ public class GameManager : MonoBehaviour
         return false;
     }
 
-    // Get current cookie count
+    
     public int GetCookieCount()
     {
         return cookieCount;
     }
 
-    // Get current click power (base + multiplier)
+    
     public int GetClickPower()
     {
         return baseClickPower + clickMultiplier;
     }
 
-    // Add click multiplier from shop items
+    
     public void AddClickMultiplier(int amount)
     {
         clickMultiplier += amount;
         multipliersBought++;
 
-        // Track quest progress
+       
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.AddProgress(QuestType.BuyMultiplier, 1);
         }
 
+        
+        TriggerSave();
+
         Debug.Log($"Click power increased! Now: {GetClickPower()} per click");
     }
 
-    // Add auto click rate from shop items
+   
     public void AddAutoClickRate(float rate)
     {
         autoClickRate += rate;
         autoClickersBought++;
 
-        // Track quest progress
+       
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.AddProgress(QuestType.BuyAutoClicker, 1);
         }
 
+       
+        TriggerSave();
+
         Debug.Log($"Auto click rate increased! Now: {autoClickRate} clicks per second");
     }
 
-    // Track skin 
+   
     public void OnSkinChanged()
     {
         skinsChanged++;
 
-        // Track quest progress
+       
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.AddProgress(QuestType.ChangeCookieSkin, 1);
         }
 
+        
+        TriggerSave();
+
         Debug.Log($"Cookie skin changed! Total changes: {skinsChanged}");
     }
 
-    // Update UI counter display
     private void UpdateCookieCounterUI()
     {
         if (cookieCounterText != null)
@@ -173,10 +250,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Method untuk manual click
+   
     public void OnCookieClicked()
     {
-        AddCookie(GetClickPower(), true); 
+        AddCookie(GetClickPower(), true);
     }
 
     

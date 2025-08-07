@@ -2837,6 +2837,55 @@ CanvasGroup:
   m_Interactable: 1
   m_BlocksRaycasts: 1
   m_IgnoreParentGroups: 0
+--- !u!1 &832723713
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 832723715}
+  - component: {fileID: 832723714}
+  m_Layer: 0
+  m_Name: PlayFabManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &832723714
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832723713}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0b0d7144c3e030a4880bc85d2aa9ff77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  titleId: 14B98A
+  autoSaveEnabled: 1
+  autoSaveInterval: 30
+  saveOnApplicationPause: 1
+  enableDebugLogs: 0
+--- !u!4 &832723715
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 832723713}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 794.65894, y: 1023.7268, z: -11.082304}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &854157675
 GameObject:
   m_ObjectHideFlags: 0
@@ -3645,6 +3694,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cookieCounterText: {fileID: 1312130515}
   baseClickPower: 1
+  enableAutoSave: 1
+  saveOnProgressInterval: 5
 --- !u!4 &1017767662
 Transform:
   m_ObjectHideFlags: 0
@@ -8459,4 +8510,5 @@ SceneRoots:
   - {fileID: 548818138}
   - {fileID: 127419537}
   - {fileID: 869557191}
+  - {fileID: 832723715}
   - {fileID: 2019920519}
