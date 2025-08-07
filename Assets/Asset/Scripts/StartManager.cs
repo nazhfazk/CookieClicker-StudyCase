@@ -8,7 +8,7 @@ public class StartManager : MonoBehaviour
     [SerializeField] private GameObject gameplayPanel;
 
     [Header("Cookie Clicker")]
-    [SerializeField] private CookieClicker cookieClicker;
+    [SerializeField] private Clicker cookieClicker;
 
     [Header("Fade Settings")]
     [SerializeField] private CanvasGroup mainMenuCanvasGroup;
