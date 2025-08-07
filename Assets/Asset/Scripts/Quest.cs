@@ -5,7 +5,7 @@ public class Quest
     public QuestData data;
     public int currentProgress;
     public bool isCompleted;
-    public bool isRewarded; // Track if reward has been given
+    public bool isRewarded; // Track reward
 
     public Quest(QuestData data)
     {

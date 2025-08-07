@@ -2187,7 +2187,7 @@ MonoBehaviour:
   - itemName: Multiplier
     description: 
     basePrice: 100
-    itemIcon: {fileID: 0}
+    itemIcon: {fileID: 559978524, guid: 2139f22e55c34f74d9af36cb07031bc2, type: 3}
     itemType: 1
     clickMultiplier: 1
     autoClickRate: 0
@@ -2196,7 +2196,7 @@ MonoBehaviour:
   - itemName: AutoClicker
     description: 
     basePrice: 250
-    itemIcon: {fileID: 0}
+    itemIcon: {fileID: -816821380, guid: 2139f22e55c34f74d9af36cb07031bc2, type: 3}
     itemType: 0
     clickMultiplier: 0
     autoClickRate: 0.5

@@ -5,22 +5,22 @@ using System.Collections;
 public class PopupManager : MonoBehaviour
 {
     [Header("Overlay Background")]
-    [SerializeField] private GameObject overlay; // Background gelap semi-transparan
+    [SerializeField] private GameObject overlay; 
 
     [Header("Shop Popup")]
-    [SerializeField] private GameObject shopPopup; // Panel shop
-    [SerializeField] private Button shopButton; // Tombol buka shop
-    [SerializeField] private Button shopCloseButton; // Tombol tutup shop (X)
+    [SerializeField] private GameObject shopPopup; 
+    [SerializeField] private Button shopButton; 
+    [SerializeField] private Button shopCloseButton; 
 
     [Header("Quest Popup")]
-    [SerializeField] private GameObject questPopup; // Panel quest
-    [SerializeField] private Button questButton; // Tombol buka quest
-    [SerializeField] private QuestPanelManager questPanelManager; //PanelManager
-    [SerializeField] private Button questCloseButton; // Tombol tutup quest (X)
+    [SerializeField] private GameObject questPopup; 
+    [SerializeField] private Button questButton; 
+    [SerializeField] private QuestPanelManager questPanelManager; 
+    [SerializeField] private Button questCloseButton; 
 
     [Header("Animation Settings")]
-    [SerializeField] private float animationDuration = 0.3f; // Durasi animasi
-    [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); // Kurva animasi
+    [SerializeField] private float animationDuration = 0.3f; 
+    [SerializeField] private AnimationCurve scaleCurve = AnimationCurve.EaseInOut(0, 0, 1, 1); 
 
     private bool isAnimating = false;
 
@@ -93,7 +93,7 @@ public class PopupManager : MonoBehaviour
             return;
         }
 
-        StartCoroutine(ShowQuestPopup()); // Khusus quest pakai coroutine khusus
+        StartCoroutine(ShowQuestPopup()); 
     }
 
     public void CloseAllPopups()
@@ -153,7 +153,7 @@ public class PopupManager : MonoBehaviour
         questPopup.SetActive(true);
         questPopup.transform.localScale = Vector3.zero;
 
-        // Init quest panel manually before showing
+       
         if (questPanelManager != null)
         {
             questPanelManager.InitPanel();

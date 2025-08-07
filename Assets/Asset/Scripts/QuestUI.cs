@@ -38,7 +38,7 @@ public class QuestUI : MonoBehaviour
     {
         if (currentQuest == null || currentQuest.data == null) return;
 
-        // Update basic info
+        
         if (titleText != null)
             titleText.text = currentQuest.data.questTitle;
 
@@ -48,17 +48,17 @@ public class QuestUI : MonoBehaviour
         if (rewardText != null)
             rewardText.text = $"+{currentQuest.data.rewardCookies} cookies";
 
-        // Update progress
+        
         if (progressSlider != null)
             progressSlider.value = currentQuest.GetProgressNormalized();
 
         if (progressText != null)
             progressText.text = currentQuest.GetProgressText();
 
-        // Update claim button
+        
         UpdateClaimButton();
 
-        // Update colors based on status
+        
         UpdateStatusColors();
     }
 
@@ -70,7 +70,7 @@ public class QuestUI : MonoBehaviour
         claimButton.gameObject.SetActive(canClaim);
         claimButton.interactable = canClaim;
 
-        // Debug untuk troubleshoot button
+        
         Debug.Log($"[QuestUI] Quest: {currentQuest.data.questTitle} - Completed: {currentQuest.isCompleted} - Rewarded: {currentQuest.isRewarded} - CanClaim: {canClaim}");
 
         if (canClaim)
@@ -92,7 +92,7 @@ public class QuestUI : MonoBehaviour
         else
             statusColor = inProgressColor;
 
-        // Apply color to various elements
+       
         if (titleText != null)
             titleText.color = statusColor;
 
@@ -110,14 +110,14 @@ public class QuestUI : MonoBehaviour
 
         if (currentQuest != null && currentQuest.isCompleted && !currentQuest.isRewarded)
         {
-            // Use QuestManager's reward claiming system instead of doing it manually
+            
             if (QuestManager.Instance != null)
             {
                 bool success = QuestManager.Instance.ClaimQuestReward(currentQuest);
                 if (success)
                 {
                     Debug.Log($"[QuestUI] Successfully claimed quest reward: {currentQuest.data.rewardCookies} cookies");
-                    // QuestManager will handle UI updates through events
+                    
                 }
                 else
                 {
@@ -135,7 +135,7 @@ public class QuestUI : MonoBehaviour
         }
     }
 
-    // ADD MISSING METHOD: GetProgressInfo for debugging
+    
     public string GetProgressInfo()
     {
         if (currentQuest == null || currentQuest.data == null)
@@ -144,13 +144,13 @@ public class QuestUI : MonoBehaviour
         return $"{currentQuest.data.questTitle}: {currentQuest.currentProgress}/{currentQuest.data.targetAmount} - Completed: {currentQuest.isCompleted} - Rewarded: {currentQuest.isRewarded}";
     }
 
-    // Helper method to check if this quest UI is ready to claim
+    
     public bool IsReadyToClaim()
     {
         return currentQuest != null && currentQuest.isCompleted && !currentQuest.isRewarded;
     }
 
-    // Get the current quest reference
+    
     public Quest GetQuest()
     {
         return currentQuest;

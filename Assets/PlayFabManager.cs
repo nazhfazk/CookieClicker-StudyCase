@@ -14,7 +14,7 @@ public class PlayFabManager : MonoBehaviour
 
     [Header("Save Settings")]
     [SerializeField] private bool autoSaveEnabled = true;
-    [SerializeField] private float autoSaveInterval = 30f; // Auto save setiap 30 detik
+    [SerializeField] private float autoSaveInterval = 180f; // Auto save setiap 30 detik
     [SerializeField] private bool saveOnApplicationPause = true;
 
     [Header("Debug")]

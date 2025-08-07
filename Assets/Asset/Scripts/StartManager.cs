@@ -40,7 +40,6 @@ public class StartManager : MonoBehaviour
 
         mainMenuCanvasGroup.alpha = 0;
 
-        // 👉 Enable gameplay first, then disable main menu
         gameplayPanel.SetActive(true);
         mainMenuPanel.SetActive(false);
 

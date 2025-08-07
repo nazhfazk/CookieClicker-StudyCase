@@ -4,21 +4,18 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 
-/// <summary>
-/// Complete Quest Panel Manager - Fixed version with proper reward claiming
-/// Fixes: GetProgressInfo method + Button click handling + Event management
-/// </summary>
+
 public class QuestPanelManager : MonoBehaviour
 {
     [Header("UI References")]
-    public Transform questParent; // This should be the "Content" GameObject
+    public Transform questParent; 
     public GameObject questUIPrefab;
     public TextMeshProUGUI countdownText;
 
     [Header("Layout Settings")]
-    [SerializeField] private float questPrefabHeight = 150f; // Height for each quest prefab
-    [SerializeField] private bool debugLayout = true; // Enable layout debugging
-    [SerializeField] private bool debugQuestProgress = true; // Enable quest progress debugging
+    [SerializeField] private float questPrefabHeight = 150f; 
+    [SerializeField] private bool debugLayout = true; 
+    [SerializeField] private bool debugQuestProgress = true; 
 
     private List<QuestUI> questUIs = new List<QuestUI>();
     private bool isInitialized = false;
@@ -26,25 +23,25 @@ public class QuestPanelManager : MonoBehaviour
     #region Unity Lifecycle
     private void Start()
     {
-        // Set countdown text reference in QuestManager
+        // Set countdown  untuk quest refresh
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.SetCountdownText(countdownText);
         }
 
-        // Verify layout components
+       
         VerifyLayoutComponents();
     }
 
     private void OnEnable()
     {
-        // Subscribe to events when panel becomes active
+        
         InitPanel();
     }
 
     private void OnDisable()
     {
-        // Unsubscribe from events when panel becomes inactive
+        
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.OnQuestUpdated -= RefreshUI;
@@ -54,7 +51,7 @@ public class QuestPanelManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        // Clean up event subscriptions
+       
         if (QuestManager.Instance != null)
         {
             QuestManager.Instance.OnQuestUpdated -= RefreshUI;
@@ -64,9 +61,7 @@ public class QuestPanelManager : MonoBehaviour
     #endregion
 
     #region Layout System Fix
-    /// <summary>
-    /// Verify that all necessary layout components are present and configured
-    /// </summary>
+    
     private void VerifyLayoutComponents()
     {
         if (questParent == null)
@@ -75,7 +70,6 @@ public class QuestPanelManager : MonoBehaviour
             return;
         }
 
-        // Check for Vertical Layout Group
         VerticalLayoutGroup layoutGroup = questParent.GetComponent<VerticalLayoutGroup>();
         if (layoutGroup == null)
         {
@@ -83,15 +77,14 @@ public class QuestPanelManager : MonoBehaviour
             layoutGroup = questParent.gameObject.AddComponent<VerticalLayoutGroup>();
         }
 
-        // Configure Vertical Layout Group - IMPORTANT SETTINGS!
         layoutGroup.childControlWidth = true;
         layoutGroup.childControlHeight = true;
         layoutGroup.childForceExpandWidth = true;
-        layoutGroup.childForceExpandHeight = false; // CRITICAL: False to prevent overlap
-        layoutGroup.spacing = 20f;
+        layoutGroup.childForceExpandHeight = false; 
+        layoutGroup.spacing = 270f;
         layoutGroup.childAlignment = TextAnchor.UpperCenter;
 
-        // Check for Content Size Fitter
+        
         ContentSizeFitter sizeFitter = questParent.GetComponent<ContentSizeFitter>();
         if (sizeFitter == null)
         {
@@ -99,9 +92,9 @@ public class QuestPanelManager : MonoBehaviour
             sizeFitter = questParent.gameObject.AddComponent<ContentSizeFitter>();
         }
 
-        // Configure Content Size Fitter - IMPORTANT SETTINGS!
+        
         sizeFitter.horizontalFit = ContentSizeFitter.FitMode.Unconstrained;
-        sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; // CRITICAL
+        sizeFitter.verticalFit = ContentSizeFitter.FitMode.PreferredSize; 
 
         if (debugLayout)
         {
@@ -109,9 +102,7 @@ public class QuestPanelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Force rebuild layout to fix positioning issues
-    /// </summary>
+   
     private void ForceLayoutRebuild()
     {
         if (questParent == null) return;
@@ -119,10 +110,10 @@ public class QuestPanelManager : MonoBehaviour
         RectTransform contentRect = questParent.GetComponent<RectTransform>();
         if (contentRect != null)
         {
-            // Force layout rebuild
+          
             LayoutRebuilder.ForceRebuildLayoutImmediate(contentRect);
 
-            // If parent has layout, rebuild that too
+           
             Transform parentOfParent = questParent.parent;
             if (parentOfParent != null)
             {
@@ -155,15 +146,15 @@ public class QuestPanelManager : MonoBehaviour
             Debug.Log("[QuestPanelManager] Initializing panel...");
         }
 
-        // Unsubscribe first to prevent duplicate subscriptions
+        
         QuestManager.Instance.OnQuestUpdated -= RefreshUI;
         QuestManager.Instance.OnQuestUpdated -= UpdateQuestProgress;
 
-        // Subscribe to events for quest progress updates
+        
         QuestManager.Instance.OnQuestUpdated += RefreshUI;
         QuestManager.Instance.OnQuestUpdated += UpdateQuestProgress;
 
-        // Initial UI setup
+       
         RefreshUI();
         isInitialized = true;
     }
@@ -181,21 +172,19 @@ public class QuestPanelManager : MonoBehaviour
             return;
         }
 
-        // Clear existing UI properly
+        
         ClearQuestUIs();
 
-        // Wait one frame to ensure cleanup is complete, then create new UIs
+        
         StartCoroutine(CreateQuestUIsDelayed());
     }
 
-    /// <summary>
-    /// Create quest UIs with proper delay for layout system
-    /// </summary>
+    
     private IEnumerator CreateQuestUIsDelayed()
     {
         yield return new WaitForEndOfFrame();
 
-        // Create new quest UIs
+        
         foreach (var quest in QuestManager.Instance.activeQuests)
         {
             CreateQuestUI(quest);
@@ -206,17 +195,17 @@ public class QuestPanelManager : MonoBehaviour
             Debug.Log($"[QuestPanelManager] Created {questUIs.Count} quest UIs");
         }
 
-        // Force layout rebuild after creating all UIs
+        
         yield return new WaitForEndOfFrame();
         ForceLayoutRebuild();
     }
 
     private void ClearQuestUIs()
     {
-        // Clear our list first
+       
         questUIs.Clear();
 
-        // Destroy all children in the quest parent
+        
         if (questParent != null)
         {
             for (int i = questParent.childCount - 1; i >= 0; i--)
@@ -252,24 +241,24 @@ public class QuestPanelManager : MonoBehaviour
             return;
         }
 
-        // Instantiate quest UI prefab
+       
         GameObject questObj = Instantiate(questUIPrefab, questParent);
 
-        // Configure Layout Element for proper sizing (FIX LAYOUT)
+       
         LayoutElement layoutElement = questObj.GetComponent<LayoutElement>();
         if (layoutElement == null)
         {
             layoutElement = questObj.AddComponent<LayoutElement>();
         }
 
-        // Configure layout element settings
+      
         layoutElement.ignoreLayout = false;
         layoutElement.minHeight = questPrefabHeight;
         layoutElement.preferredHeight = questPrefabHeight;
         layoutElement.flexibleHeight = 0f;
         layoutElement.flexibleWidth = 1f;
 
-        // Configure RectTransform for proper anchoring (FIX LAYOUT)
+       
         RectTransform rectTransform = questObj.GetComponent<RectTransform>();
         if (rectTransform != null)
         {
@@ -279,7 +268,7 @@ public class QuestPanelManager : MonoBehaviour
             rectTransform.sizeDelta = new Vector2(0, questPrefabHeight);
         }
 
-        // Setup quest UI component (FIX QUEST COMPLETION)
+      
         QuestUI questUI = questObj.GetComponent<QuestUI>();
         if (questUI == null)
         {
@@ -288,7 +277,7 @@ public class QuestPanelManager : MonoBehaviour
             return;
         }
 
-        // Initialize quest UI with data
+        
         questUI.SetData(quest);
         questUIs.Add(questUI);
 
@@ -300,10 +289,7 @@ public class QuestPanelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Update quest progress for all active quest UIs (FIX QUEST COMPLETION)
-    /// This method is called when quest progress changes
-    /// </summary>
+
     public void UpdateQuestProgress()
     {
         if (!isInitialized) return;
@@ -313,7 +299,7 @@ public class QuestPanelManager : MonoBehaviour
             Debug.Log("[QuestPanelManager] Updating quest progress for all UIs");
         }
 
-        // Update each quest UI with current progress
+   
         for (int i = 0; i < questUIs.Count; i++)
         {
             if (questUIs[i] != null)
@@ -327,13 +313,11 @@ public class QuestPanelManager : MonoBehaviour
             }
         }
 
-        // Check for completed quests that are ready to claim
+      
         CheckForReadyToClaim();
     }
 
-    /// <summary>
-    /// Check and highlight quests that are ready to claim rewards
-    /// </summary>
+
     private void CheckForReadyToClaim()
     {
         int readyToClaimCount = 0;
@@ -354,18 +338,14 @@ public class QuestPanelManager : MonoBehaviour
     #endregion
 
     #region Debug & Utility Methods
-    /// <summary>
-    /// Force refresh all quest UIs (useful for debugging)
-    /// </summary>
+    
     [ContextMenu("Force Refresh UI")]
     public void ForceRefreshUI()
     {
         RefreshUI();
     }
 
-    /// <summary>
-    /// Debug method to check layout status
-    /// </summary>
+    
     [ContextMenu("Debug Layout Info")]
     public void DebugLayoutInfo()
     {
@@ -389,9 +369,7 @@ public class QuestPanelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Debug method to check quest progress
-    /// </summary>
+
     [ContextMenu("Debug Quest Progress")]
     public void DebugQuestProgress()
     {
@@ -415,9 +393,7 @@ public class QuestPanelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Debug method to force complete a quest for testing
-    /// </summary>
+    
     [ContextMenu("DEBUG: Complete First Quest")]
     public void DebugCompleteFirstQuest()
     {
@@ -429,7 +405,7 @@ public class QuestPanelManager : MonoBehaviour
                 firstQuest.AddProgress(firstQuest.data.targetAmount - firstQuest.currentProgress);
                 Debug.Log($"[DEBUG] Completed quest: {firstQuest.data.questTitle}");
 
-                // Trigger UI update
+                
                 QuestManager.Instance.TriggerQuestUpdate();
             }
             else
@@ -439,9 +415,6 @@ public class QuestPanelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Debug method to check button states
-    /// </summary>
     [ContextMenu("DEBUG: Check Button States")]
     public void DebugButtonStates()
     {
@@ -462,9 +435,6 @@ public class QuestPanelManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Get the number of currently displayed quest UIs
-    /// </summary>
     public int GetActiveQuestUICount()
     {
         return questUIs.Count;

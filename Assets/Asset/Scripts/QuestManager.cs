@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Collections;
 using TMPro;
 
-/// <summary>
-/// Fixed Quest Manager - Handles quest logic, progress tracking, and rewards
-/// Fixes: Proper quest completion flow, progress updates, and reward claiming
-/// </summary>
+
+
 public class QuestManager : MonoBehaviour
 {
     public static QuestManager Instance;
@@ -14,7 +12,7 @@ public class QuestManager : MonoBehaviour
     [Header("Quest Config")]
     public List<QuestData> allQuests;
     public int activeQuestCount = 3;
-    public float refreshInterval = 300f; // 5 minutes in seconds
+    public float refreshInterval = 300f; 
 
     [Header("UI References")]
     [SerializeField] private TextMeshProUGUI countdownText;
@@ -22,7 +20,7 @@ public class QuestManager : MonoBehaviour
     [Header("Active Quests (Runtime)")]
     public List<Quest> activeQuests = new List<Quest>();
 
-    // Events for UI updates
+   
     public delegate void QuestUpdated();
     public event QuestUpdated OnQuestUpdated;
 
@@ -54,7 +52,7 @@ public class QuestManager : MonoBehaviour
 
         UpdateCountdownUI();
 
-        // Check for automatic quest refresh (every 5 minutes)
+       
         if (Time.time >= nextRefreshTime)
         {
             Debug.Log("[QuestManager] Auto-refreshing quests due to timer");
@@ -81,10 +79,10 @@ public class QuestManager : MonoBehaviour
     {
         if (allQuests == null) allQuests = new List<QuestData>();
 
-        // Clear existing quests to prevent duplicates
+        
         allQuests.Clear();
 
-        // Create 6 different quests programmatically
+        
         allQuests.Add(CreateQuestData("Cookie Clicker Novice", "Click cookies {target} times", QuestType.ClickCertainAmount, 50, 100));
         allQuests.Add(CreateQuestData("Big Spender", "Spend {target} cookies", QuestType.SpendCookies, 200, 150));
         allQuests.Add(CreateQuestData("Cookie Collector", "Earn {target} cookies total", QuestType.EarnCookies, 500, 250));
@@ -114,7 +112,7 @@ public class QuestManager : MonoBehaviour
 
         activeQuests.Clear();
 
-        // Shuffle and select random quests
+        // Acak dan pilih random quest
         List<QuestData> shuffled = new List<QuestData>(allQuests);
         for (int i = 0; i < shuffled.Count; i++)
         {
@@ -124,7 +122,7 @@ public class QuestManager : MonoBehaviour
             shuffled[randomIndex] = temp;
         }
 
-        // Take up to activeQuestCount quests
+        
         int questsToTake = Mathf.Min(activeQuestCount, shuffled.Count);
         for (int i = 0; i < questsToTake; i++)
         {
@@ -133,14 +131,11 @@ public class QuestManager : MonoBehaviour
 
         Debug.Log($"[QuestManager] Created {activeQuests.Count} active quests");
 
-        // Notify UI to update
+        
         OnQuestUpdated?.Invoke();
     }
 
-    /// <summary>
-    /// Add progress to quests of specific type
-    /// Fixed: Now properly triggers UI updates when progress changes
-    /// </summary>
+ 
     public void AddProgress(QuestType type, int amount = 1)
     {
         bool hasProgress = false;
@@ -157,7 +152,6 @@ public class QuestManager : MonoBehaviour
                     hasProgress = true;
                     Debug.Log($"[QuestManager] Quest '{quest.data.questTitle}' progress: {quest.currentProgress}/{quest.data.targetAmount}");
 
-                    // Check if quest just completed
                     if (quest.isCompleted && !quest.isRewarded)
                     {
                         Debug.Log($"[QuestManager] Quest '{quest.data.questTitle}' completed! Ready to claim reward.");
@@ -166,7 +160,6 @@ public class QuestManager : MonoBehaviour
             }
         }
 
-        // Trigger UI update if any progress was made
         if (hasProgress)
         {
             Debug.Log("[QuestManager] Triggering UI update due to quest progress");
@@ -174,10 +167,7 @@ public class QuestManager : MonoBehaviour
         }
     }
 
-    /// <summary>
-    /// Claim reward for a completed quest
-    /// Fixed: Proper reward claiming flow
-    /// </summary>
+   
     public bool ClaimQuestReward(Quest quest)
     {
         if (quest == null || !quest.isCompleted || quest.isRewarded)
@@ -186,17 +176,17 @@ public class QuestManager : MonoBehaviour
             return false;
         }
 
-        // Give reward to player
+        
         if (GameManager.Instance != null)
         {
             GameManager.Instance.AddCookie(quest.data.rewardCookies, false); // false = not manual click
             Debug.Log($"[QuestManager] Claimed quest reward: {quest.data.rewardCookies} cookies for '{quest.data.questTitle}'");
         }
 
-        // Mark as rewarded
+        
         quest.isRewarded = true;
 
-        // Check if all quests are completed and claimed
+        
         bool allQuestsClaimedOrIncomplete = true;
         foreach (var activeQuest in activeQuests)
         {
@@ -207,16 +197,16 @@ public class QuestManager : MonoBehaviour
             }
         }
 
-        // If all completed quests are claimed, refresh quest list
+        
         if (allQuestsClaimedOrIncomplete && HasAnyCompletedQuests())
         {
             Debug.Log("[QuestManager] All quests completed and claimed, refreshing quest list");
             RefreshQuests();
-            nextRefreshTime = Time.time + refreshInterval; // Reset timer
+            nextRefreshTime = Time.time + refreshInterval; 
         }
         else
         {
-            // Just update UI
+            
             OnQuestUpdated?.Invoke();
         }
 
@@ -257,9 +247,7 @@ public class QuestManager : MonoBehaviour
         countdownText = text;
     }
 
-    /// <summary>
-    /// Helper method to trigger quest update event manually
-    /// </summary>
+   
     public void TriggerQuestUpdate()
     {
         Debug.Log("[QuestManager] Manually triggering quest update");
@@ -268,9 +256,7 @@ public class QuestManager : MonoBehaviour
     #endregion
 
     #region Debug & Testing
-    /// <summary>
-    /// Force refresh for testing purposes
-    /// </summary>
+    
     [ContextMenu("Force Refresh Quests")]
     public void ForceRefreshQuests()
     {
@@ -284,9 +270,7 @@ public class QuestManager : MonoBehaviour
         return nextRefreshTime - Time.time;
     }
 
-    /// <summary>
-    /// Debug method to check quest status
-    /// </summary>
+ 
     [ContextMenu("Debug Quest Status")]
     public void DebugQuestStatus()
     {
